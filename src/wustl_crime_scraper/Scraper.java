@@ -23,16 +23,35 @@ import java.util.Vector;
 import javax.xml.stream.events.Characters;
 
 
+class Crime { 
+	String type;
+	String date; 
+	String time; 
+	String location; 
+	String summary; 
+	Crime(String type, String date, String time, String location, String summary) {
+		this.type = type; 
+		this.date = date; 
+		this.time = time; 
+		this.location = location;
+		this.summary = summary; 
+	}
+}
+
 public class Scraper {
 
-	static final String DEFAULT_URL = "https://police.wustl.edu/clerylogsandreports/Daily-Crime-Log/Documents/August2002.html";
+	static final String DEFAULT_URL = "https://police.wustl.edu/clerylogsandreports/Daily-Crime-Log/Documents/";
 	private static WebClient client;
 
+	public static String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+	public static String[] monthsAb = {"JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+	
+	
 
-	public static void scrape() {
+	public static List<Crime> scrape(int month, int year) {
 		client = new WebClient();
 
-		String searchUrl = DEFAULT_URL;
+		String searchUrl = DEFAULT_URL + months[month] + year + ".html";
 
 		HtmlPage page;
 		try {
@@ -52,7 +71,7 @@ public class Scraper {
 			
 			String lines[] = targetText.split("\\r?\\n");
 			LinkedList<String> filteredList = new LinkedList<String>(); 
-			for (int i = 3; i < lines.length; i++) { 
+			for (int i = 2; i < lines.length; i++) { 
 				if (lines[i].indexOf('?') == -1 && !lines[i].isEmpty()) {
 					filteredList.add(lines[i]);
 				}
@@ -62,7 +81,6 @@ public class Scraper {
 			int begin = 0; 
 			
 			for (int i = 0; i < filteredList.size(); i++) { 
-				System.out.println(filteredList.get(i));
 				String line = filteredList.get(i); 
 				if (Character.isUpperCase(line.charAt(0)) && Character.isUpperCase(line.charAt(1))) {
 					if (i != 0) { 
@@ -73,18 +91,35 @@ public class Scraper {
 							combined += (filteredList.get(j) + " ");
 						}
 						//System.out.println("END: " + (i-1));
-						System.out.println("COMBINED: " + combined);
 						splitList.add(combined);
 						begin = i; 
 					}
 				}
 			}
 			
+			List<Crime> crimes = new LinkedList<Crime>(); 
+			
 			for (int i = 0; i < splitList.size(); i++) { 
-				System.out.println("BREAK : " + splitList.get(i));
+				String paragraph = splitList.get(i);
+				String type = paragraph.substring(0, paragraph.indexOf(" ")); 
+				String date = paragraph.substring(paragraph.indexOf(monthsAb[month]), paragraph.indexOf(""+year)+4);
+				String afterYear = paragraph.substring(paragraph.indexOf(year+""));
+				String time = afterYear.substring(afterYear.indexOf(":")-2, afterYear.indexOf(":") + 3);
+				String afterLocation = paragraph.substring(paragraph.indexOf("Location: ")+10); 
+				String location;
+				if (afterLocation.contains("(")) { 
+					location = afterLocation.substring(0, afterLocation.indexOf("("));
+				} else { 
+					location = afterLocation.substring(0, afterLocation.indexOf("Summary"));
+				}
+				
+				String summary = paragraph.substring(paragraph.indexOf("Summary: ") + 9);
+				Crime crime = new Crime(type, date, time, location, summary); 
+				crimes.add(crime);
 			}
 			
-
+			return crimes; 
+			
 		} catch (FailingHttpStatusCodeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,12 +130,23 @@ public class Scraper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 
 	}
 
+	public static void recordCrimes(List<Crime> crimes) { 
+		for (int i = 0; i < crimes.size(); i++) { 
+			
+			
+		}
+	}
+	
 
 	public static void main(String[] args) { 
-		scrape();
+		
+		
+		
+		scrape(4, 2003); // month is index 1 down. Ex: March is denoted as 2 
 	}
 
 
