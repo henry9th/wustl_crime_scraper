@@ -62,17 +62,18 @@ public class Scraper {
 			int begin = 0; 
 			
 			for (int i = 0; i < filteredList.size(); i++) { 
+				System.out.println(filteredList.get(i));
 				String line = filteredList.get(i); 
-				System.out.println(line.charAt(0) + " : " + line.charAt(1));
 				if (Character.isUpperCase(line.charAt(0)) && Character.isUpperCase(line.charAt(1))) {
 					if (i != 0) { 
 						String combined = ""; 
-						System.out.println("BEGIN: " + begin);
+						//System.out.println("BEGIN: " + begin);
 						for (int j = begin; j < i; j++) { 
-							System.out.println(lines[j]);
-							combined += (lines[j] + " ");
+							//System.out.println(lines[j]);
+							combined += (filteredList.get(j) + " ");
 						}
-						System.out.println("END: " + (i-1));
+						//System.out.println("END: " + (i-1));
+						System.out.println("COMBINED: " + combined);
 						splitList.add(combined);
 						begin = i; 
 					}
