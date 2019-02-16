@@ -44,6 +44,29 @@ class Crime {
 		this.location = location;
 		this.summary = summary; 
 	}
+	@Override
+    public boolean equals(Object o) { 
+//		System.out.println("Crime Compare");
+		Crime c = (Crime) o;
+//		if (this.type != c.type) { 
+//			System.out.print("type ");
+//		}
+//		if (this.date != c.date) { 
+//			System.out.print("date ");
+//		}
+//		if (this.time != c.time) { 
+//			System.out.print("time ");
+//			
+//		}
+//		if (this.location != c.location) { 
+//			System.out.print("location ");
+//		}
+//		if (this.summary != c.summary) { 
+//			System.out.print("summary ");
+//		}
+		System.out.println(); 
+		return (this.type == c.type && this.date == c.date && this.time == c.time && this.location == c.location && this.summary == c.summary); 
+    } 
 }
 
 public class Scraper {
@@ -56,10 +79,10 @@ public class Scraper {
 	public static String[] monthsAbAlt = {"JAN.", "FEB.", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUG", "SEPT", "OCT", "NOV", "DEC"};
 	public static String[] monthsAbAlt2 = {"JAN.", "FEB.", "MARCH", "APR.", "MAY", "JUNE", "JULY", "AUG", "SEPT", "Oct.", "NOV", "DEC"};
 
-	public static int numTimeSkipped =0;
-	public static int numDateSkipped =0;
-	public static int numLocationSkipped =0;
-	public static int numSummarySkipped =0;
+	public static int numTimeSkipped = 0;
+	public static int numDateSkipped = 0;
+	public static int numLocationSkipped = 0;
+	public static int numSummarySkipped = 0;
 
 	public static List<Crime> scrape(int month, int year) {
 		client = new WebClient();
