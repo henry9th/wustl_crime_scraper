@@ -160,7 +160,12 @@ public class Scraper {
 				}
 				
 				try { 
-					String afterLocation = paragraph.substring(paragraph.indexOf("Location: ")+10); 
+					String afterLocation;
+					if (paragraph.indexOf("Location: ") == -1) { 
+						afterLocation = paragraph.substring(paragraph.indexOf("Location : ")+11);
+					} else {
+						afterLocation = paragraph.substring(paragraph.indexOf("Location: ")+10); 
+					}
 					if (afterLocation.contains("(")) { 
 						location = afterLocation.substring(0, afterLocation.indexOf("("));
 					} else { 
