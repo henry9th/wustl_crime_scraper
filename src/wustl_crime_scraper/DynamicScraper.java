@@ -43,13 +43,13 @@ public class DynamicScraper {
 	static final String DEFAULT_URL = "https://police.wustl.edu/Pages/Daily-Crime-Log-Archive.aspx";
 	private static WebClient client;
 	static List<Crime> gCrimes = new LinkedList<Crime>();
-	
+
 	public static void scrape(HtmlPage page, int year) {
-		System.out.print("NEW LIST: " );
-		for (int i = 0; i < gCrimes.size(); i++) { 
-			System.out.print(gCrimes.get(i).date + "|" );
-		}
-		System.out.println(); 
+		//System.out.print("NEW LIST: " );
+		//		for (int i = 0; i < gCrimes.size(); i++) { 
+		//			System.out.print(gCrimes.get(i).date + "|" );
+		//		}
+		//		System.out.println(); 
 		String searchTag = ""; 
 		if (year == 2019) { 
 			searchTag = "WebPartWPQ3"; 
@@ -70,7 +70,6 @@ public class DynamicScraper {
 
 		LinkedList<Crime> crimes = new LinkedList<Crime>(); 
 
-		//client.setAjaxController(new NicelyResynchronizingAjaxController());
 		client.setAjaxController(new AjaxController(){
 			@Override
 			public boolean processSynchron(HtmlPage page, WebRequest request, boolean async)
@@ -125,41 +124,32 @@ public class DynamicScraper {
 				}
 			}
 			Crime crime = new Crime(type, date, time, location, summary); 
-			System.out.println("crime: " +crime.date + " : " + crime.type + " : " + crime.location + " : " +crime.time + " : " + crime.summary);
-
-			if (gCrimes.contains(crime)) { 
-				System.out.println("REPEATED");
-			} else { 
-				gCrimes.add(crime);
-				keepGoing = true; 
-			}
+			System.out.println(crime.date + " : " + crime.type + " : " + crime.location + " : " +crime.time + " : " + crime.summary);
+			gCrimes.add(crime);
 		}
 
-		if (keepGoing == true) { 
-			// Recursive call for next page after javascript action
-			List<?> anchors = page.getByXPath("//*[@id='" + searchTag + "']/table/tbody/tr/td/a");
-			for (int i = 0; i < anchors.size(); i++) { 
-				HtmlAnchor anchor = (HtmlAnchor) anchors.get(i);
-				List<HtmlImage> anchorImages = (List<HtmlImage>) anchor.getByXPath("//*[@id=\"" + searchTag + "\"]/table/tbody/tr/td/a/img");
+		// Recursive call for next page after javascript action
+		List<?> anchors = page.getByXPath("//*[@id='" + searchTag + "']/table/tbody/tr/td/a");
+		//System.out.println("ANCHOR COUNT: " + anchors.size()) ;
+		if (anchors.size() == 2) { 
+			return; 
+		}
 
-				for (int j = 0; j < anchorImages.size(); j++) { 
-					HtmlImage anchorImage = anchorImages.get(j);
-					if (anchorImage.getSrcAttribute().contains("next.gif")) { 
-						System.out.println("SHIT");
-						HtmlPage nextPage; 
-						try {
-							HtmlAnchor nextAnchor = (HtmlAnchor) anchors.get(anchors.size()-1);
-							nextPage = nextAnchor.click();
-							scrape(nextPage, year);
-							break;
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} 
-					}
-				}
+		List<HtmlImage> anchorImages = (List<HtmlImage>) page.getByXPath("//*[@id=\"" + searchTag + "\"]/table/tbody/tr/td/a/img");
 
-
+		for (int j = 0; j < anchorImages.size(); j++) { 
+			HtmlImage anchorImage = anchorImages.get(j);
+			if (anchorImage.getSrcAttribute().contains("next.gif")) { 
+				HtmlPage nextPage; 
+				try {
+					HtmlAnchor nextAnchor = (HtmlAnchor) anchors.get(anchors.size()-1);
+					nextPage = nextAnchor.click();
+					scrape(nextPage, year);
+					break;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} 
 			}
 		}
 	}
@@ -201,7 +191,7 @@ public class DynamicScraper {
 		int rowCount = 1; 
 
 		for (int i = 0; i < gCrimes.size(); i++) { 
-			System.out.println(i + " : " + gCrimes.get(i).date);
+			//System.out.println(i + " : " + gCrimes.get(i).date);
 			Crime crime = gCrimes.get(i);
 			row = sheet.createRow(rowCount); 
 			rowCount++;

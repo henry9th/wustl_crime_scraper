@@ -46,25 +46,7 @@ class Crime {
 	}
 	@Override
     public boolean equals(Object o) { 
-//		System.out.println("Crime Compare");
 		Crime c = (Crime) o;
-//		if (this.type != c.type) { 
-//			System.out.print("type ");
-//		}
-//		if (this.date != c.date) { 
-//			System.out.print("date ");
-//		}
-//		if (this.time != c.time) { 
-//			System.out.print("time ");
-//			
-//		}
-//		if (this.location != c.location) { 
-//			System.out.print("location ");
-//		}
-//		if (this.summary != c.summary) { 
-//			System.out.print("summary ");
-//		}
-		System.out.println(); 
 		return (this.type == c.type && this.date == c.date && this.time == c.time && this.location == c.location && this.summary == c.summary); 
     } 
 }
